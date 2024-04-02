@@ -43,7 +43,7 @@ vendor/bin/phpunit
 
 ## Version
 
-* Version 0.3
+* Version 0.4
 
 ## Contact
 
