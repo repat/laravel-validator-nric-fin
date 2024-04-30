@@ -7,16 +7,6 @@ use Illuminate\Contracts\Validation\Rule;
 class NricFin implements Rule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
@@ -46,20 +36,37 @@ class NricFin implements Rule
         for ($i = 1; $i < 8; $i++) {
             $weight += $icArray[$i];
         }
-        $offset = ($icArray[0] === 'T' || $icArray[0] == 'G') ? 4 : 0;
+
+        $offset = $this->getOffset($icArray[0]);
         $temp = ($offset + $weight) % 11;
 
         $st = ['J', 'Z', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'];
         $fg = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
+        $fgM = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'J', 'L', 'K'];
 
         $theAlpha = '';
-        if ($icArray[0] == 'S' || $icArray[0] == 'T') {
+        if ($icArray[0] === 'S' || $icArray[0] === 'T') {
             $theAlpha = $st[$temp];
-        } elseif ($icArray[0] == 'F' || $icArray[0] == 'G') {
+        } elseif ($icArray[0] === 'F' || $icArray[0] === 'G') {
             $theAlpha = $fg[$temp];
+        } elseif ($icArray[0] === 'M') {
+            $theAlpha = $fgM[$temp];
         }
 
         return ($icArray[8] === $theAlpha);
+    }
+
+    private function getOffset(string $prefix): int
+    {
+        if ($prefix === 'T' || $prefix === 'G') {
+            return 4;
+        }
+
+        if ($prefix === 'M') {
+            return 3;
+        }
+
+        return 0;
     }
 
     /**
