@@ -3,45 +3,47 @@
 namespace Repat\LaravelRules;
 
 use Illuminate\Support\Str;
+use Orchestra\Testbench\TestCase;
 
-class TestNricFin extends \Orchestra\Testbench\TestCase
+class TestNricFin extends TestCase
 {
-    public function testValidNric()
+    /**
+     * @dataProvider validProvider
+     */
+    public function testValidNric(string $nric): void
     {
-        // First NRIC ever - first president of Singapore
-        $yusofBinIshak = 'S0000001I';
-
-        $nricFin = new NricFin();
-        $this->assertTrue($nricFin->passes('', $yusofBinIshak), $yusofBinIshak);
+        $this->assertTrue((new NricFin())->passes('', $nric));
     }
 
-    public function testTooShortString()
+    /**
+     * @dataProvider invalidProvider
+     */
+    public function testInvalidNric(?string $nric): void
     {
-        $nricFin = new NricFin();
-        $this->assertFalse($nricFin->passes('', Str::random(8)));
+        $this->assertFalse((new NricFin())->passes('', $nric));
     }
 
-    public function testTooLongString()
+    public static function invalidProvider(): iterable
     {
-        $nricFin = new NricFin();
-        $this->assertFalse($nricFin->passes('', Str::random(10)));
+        yield 'Too short string' => [Str::random(8)];
+        yield 'Too long string' => [Str::random(10)];
+        yield 'Empty string' => [''];
+        yield 'Null' => [null];
+        yield 'Correct length but random' => [Str::random(9)];
+        yield 'Invalid checksum 1' => ['T5717279A'];
+        yield 'Invalid checksum 2' => ['F6470401K'];
+        yield 'Invalid checksum 3' => ['G8877699L'];
+        yield 'Invalid checksum 4' => ['M8877689K'];
     }
 
-    public function testEmptyString()
+    public static function validProvider(): iterable
     {
-        $nricFin = new NricFin();
-        $this->assertFalse($nricFin->passes('', ''));
-    }
-
-    public function testNull()
-    {
-        $nricFin = new NricFin();
-        $this->assertFalse($nricFin->passes('', null));
-    }
-
-    public function testCorrectLengthButRandom()
-    {
-        $nricFin = new NricFin();
-        $this->assertFalse($nricFin->passes('', Str::random(9)));
+        yield 'First president of Singapore' => ['S0000001I'];
+        yield 'S6083480F' => ['S6083480F'];
+        yield 'T5717279C' => ['T5717279C'];
+        yield 'F6470401W' => ['F6470401W'];
+        yield 'G8877699U' => ['G8877699U'];
+        yield 'M5043078W' => ['M5043078W'];
+        yield 'M2424771J' => ['M2424771J'];
     }
 }
