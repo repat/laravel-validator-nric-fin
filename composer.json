@@ -4,7 +4,7 @@
     "keywords": ["laravel", "validator", "validation", "singapore", "nric", "fin"],
     "homepage": "https://repat.de",
     "license": "MIT",
-    "version" : "0.4",
+    "version" : "0.5",
     "authors": [
         {"name": "repat", "email": "repat@repat.de"}
     ],
